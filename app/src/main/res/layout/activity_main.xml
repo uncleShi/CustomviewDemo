@@ -9,10 +9,44 @@
 
     <com.demo.customviewdemo.CircleView
         android:id="@+id/circleview"
-        android:layout_marginTop="80dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
+        />
+
+    <com.demo.customviewdemo.StateCircleView
+        android:id="@+id/fuckview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        />
+
+    <com.demo.customviewdemo.WeightView
+        android:id="@+id/weightview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        />
+
+    <com.demo.customviewdemo.BloodSugarView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        />
+
+    <com.demo.customviewdemo.DeepSleepView
+        android:id="@+id/deepsleepview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        />
+
+    <Button
+        android:id="@+id/button"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="gram"
         />
 
 </LinearLayout>

@@ -18,9 +18,9 @@ import android.view.View;
 public class CircleView extends View {
 
     /**
-     * 圆环宽度,默认18
+     * 圆环宽度,默认40
      */
-    private float mStrokeWidth = 40.0f;
+    private float mStrokeWidth = 20.0f;
     /**
      * 圆环半径
      */
@@ -35,16 +35,35 @@ public class CircleView extends View {
     //外切圆环的矩形
     private RectF mRectF;
     //文本的范围矩形
-    private Rect mTextBound_1;
-    private Rect mTextBound_2;
+    private Rect mTextBound;
 
     //为了视觉效果而产生的间隔角度
     private int intervalAngle;
 
     /**
-     * 第一段圆弧占比
+     * 第一段圆弧占比(为了动画实现,实时变化)
      */
     private float mPercent_one;
+    /**
+     * 第一段圆弧目标占比
+     */
+    private float mPercent_one_goal;
+    /**
+     * 第二段圆弧占比(为了动画实现,实时变化)
+     */
+    private float mPercent_two;
+    /**
+     * 第二段圆弧目标占比
+     */
+    private float mPercent_two_goal;
+    /**
+     * 第三段圆弧占比(为了动画实现,实时变化)
+     */
+    private float mPercent_three;
+    /**
+     * 第三段圆弧目标占比
+     */
+    private float mPercent_three_goal;
 
     //红色
     private int circleColor_one = Color.parseColor("#F42852");
@@ -107,10 +126,9 @@ public class CircleView extends View {
         textPaint2.setAntiAlias(true);
 
         mRectF = new RectF();
-        mTextBound_1 = new Rect();
-        mTextBound_2 = new Rect();
+        mTextBound = new Rect();
 
-        //因为圆弧末端的半圆是追加上去的,计算出追加上去的半圆所对应的角度,这里为图简便将间隔的角度 intervalAngle 也赋值为计算出来的角度
+        //因为圆弧末端的半圆是追加上去的,计算出追加上去的半圆所对应的角度,这里为图简便将间隔的角度 intervalAngle 也赋值为因为追加半圆而增加的角度
         //追加上去的圆弧的长度近似等于圆环宽度的一半
         intervalAngle = (int) ((int) (mStrokeWidth / 2 * 360) / (2 * Math.PI * mRadius));
     }
@@ -153,31 +171,38 @@ public class CircleView extends View {
                 (float) getWidth() / 2 + mRadius - mStrokeWidth / 2,
                 (float) getHeight() / 2 + mRadius - mStrokeWidth / 2);
 
-        if (mPercent_one == 0) {
+        if (mPercent_one_goal == 0) {
             //数据1 为空
-            canvas.drawArc(mRectF,0,360,false, paint_circle_two);
-        } else if (mPercent_one == 1) {
+            canvas.drawArc(mRectF,0,360 * mPercent_two,false, paint_circle_two);
+        } else if (mPercent_one_goal == 1) {
             //数据2 为空
-            canvas.drawArc(mRectF,0,360,false, paint_circle_one);
+            canvas.drawArc(mRectF,0,360 * mPercent_one,false, paint_circle_one);
         } else {
             //绘制第一段圆弧
-            canvas.drawArc(mRectF, (float) (270 + 1.5 * intervalAngle), mPercent_one * 360 - 3 * intervalAngle, false, paint_circle_one);
-            //绘制第二段圆弧
-            canvas.drawArc(mRectF, (float) (270 + 1.5 * intervalAngle + mPercent_one * 360),
-                    360 * (1 - mPercent_one) - 3 * intervalAngle,
-                    false, paint_circle_two);
+            canvas.drawArc(mRectF, (float) (270 + 1.5 * intervalAngle), mPercent_one * 360 - 3 * intervalAngle > 0 ? mPercent_one * 360 - 3 * intervalAngle : 0, false, paint_circle_one);
+            if (mPercent_one == mPercent_one_goal) {
+                //绘制第二段圆弧
+                canvas.drawArc(mRectF, (float) (270 + 1.5 * intervalAngle + mPercent_one * 360),
+                        360 * mPercent_two - 3 * intervalAngle > 0 ? 360 * mPercent_two - 3 * intervalAngle : 0,
+                        false, paint_circle_two);
+            }
             //绘制第三段圆弧
-
+            if (mPercent_two == mPercent_two_goal) {
+                canvas.drawArc(mRectF, (float) (270 + 1.5 * intervalAngle + (mPercent_one + mPercent_two) * 360),
+//                        360 * mPercent_three - 3 * intervalAngle > 0 ? 360 * mPercent_three - 3 * intervalAngle : 0,
+                        0.1f,
+                        false, paint_circle_three);
+            }
         }
         //绘制文本
         String text1 = "总次数";
         String text2 = "100";
         //计算文本宽高
-        textPaint1.getTextBounds(text1, 0, String.valueOf(text1).length(), mTextBound_1);
-        canvas.drawText(text1, getWidth() / 2 - mTextBound_1.width() / 2, getHeight() / 2 - 10, textPaint1);
+        textPaint1.getTextBounds(text1, 0, String.valueOf(text1).length(), mTextBound);
+        canvas.drawText(text1, getWidth() / 2 - mTextBound.width() / 2, getHeight() / 2 - 10, textPaint1);
 
-        textPaint2.getTextBounds(text2, 0, String.valueOf(text2).length(), mTextBound_2);
-        canvas.drawText(text2, getWidth() / 2 - mTextBound_2.width() / 2, getHeight() / 2 + mTextBound_2.height() + 10, textPaint2);
+        textPaint2.getTextBounds(text2, 0, String.valueOf(text2).length(), mTextBound);
+        canvas.drawText(text2, getWidth() / 2 - mTextBound.width() / 2, getHeight() / 2 + mTextBound.height() + 10, textPaint2);
     }
 
     /**
@@ -185,7 +210,7 @@ public class CircleView extends View {
      * @param data1
      * @param data2
      */
-    public void setData(float data1, float data2) {
+    public void setData(float data1, float data2,float data3) {
         if (data1 == 0 && data2 == 0) {
             return;
         }
@@ -193,34 +218,99 @@ public class CircleView extends View {
             return;
         }
 
-        float result = data1 / (data1 + data2);
-        if (result < 0.1) {
-            result = 0.1f;
-        } else if (result > 0.9) {
-            result = 0.9f;
+        //第一段圆弧目标占比
+        mPercent_one_goal = data1 / (data1 + data2 + data3);
+
+        if (mPercent_one_goal > 0 && mPercent_one_goal < 0.1) {
+            mPercent_one_goal = 0.1f;
+        } else if (mPercent_one_goal > 0.9 && mPercent_one_goal < 1) {
+            mPercent_one_goal = 0.9f;
         }
 
-        
+        //第一段圆弧动画值
+        float animatorValue = 0;
+        if (mPercent_one_goal == 0 || mPercent_one_goal == 1) {
+            animatorValue = 1;
+        }else{
+            animatorValue = mPercent_one_goal;
+        }
+
+
+        //第二段圆弧目标占比
+//        mPercent_two_goal = 1 - mPercent_one_goal;
+        mPercent_two_goal = data2 / (data1 + data2 + data3);
+
+        if (mPercent_two_goal > 0 && mPercent_two_goal < 0.1) {
+            mPercent_two_goal = 0.1f;
+        } else if (mPercent_two_goal > 0.9 && mPercent_two_goal < 1) {
+            mPercent_two_goal = 0.9f;
+        }
+
+        //第二段圆弧动画值
+        float animatorValue_two = 0;
+        if (mPercent_two_goal == 0 || mPercent_two_goal == 1) {
+            animatorValue_two = 1;
+        }else{
+            animatorValue_two = mPercent_two_goal;
+        }
+
+        //第三段圆弧目标占比
+        mPercent_three_goal = 1 - mPercent_one_goal - mPercent_two_goal;
+
+        if (mPercent_three_goal > 0 && mPercent_three_goal < 0.1) {
+            mPercent_three_goal = 0.1f;
+        } else if (mPercent_three_goal > 0.9 && mPercent_three_goal < 1) {
+            mPercent_three_goal = 0.9f;
+        }
+
+        //第三段圆弧动画值
+        float animatorValue_three = 0;
+        if (mPercent_three_goal == 0 || mPercent_three_goal == 1) {
+            animatorValue_three = 1;
+        }else{
+            animatorValue_three = mPercent_three_goal;
+        }
+
+        //第三部分的动画
+        final ValueAnimator animator_three = ValueAnimator.ofFloat(0, animatorValue_three);
+        animator_three.setDuration(1000);
+        animator_three.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                mPercent_three = (float)animation.getAnimatedValue();
+                invalidate();
+            }
+        });
+
+        //第二部分的动画
+        final ValueAnimator animator = ValueAnimator.ofFloat(0, animatorValue_two);
+        animator.setDuration(1000);
+        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+            @Override
+            public void onAnimationUpdate(ValueAnimator animation) {
+                mPercent_two = (float)animation.getAnimatedValue();
+                invalidate();
+                if (mPercent_two == mPercent_two_goal) {
+                    animator_three.start();
+                }
+            }
+        });
+
         //第一段圆弧的动画
-        ValueAnimator anim = ValueAnimator.ofFloat(0, result);
-        anim.setDuration(2000);
-        anim.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
+        ValueAnimator animator_one = ValueAnimator.ofFloat(0, animatorValue);
+        animator_one.setDuration(1000);
+        animator_one.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override
             public void onAnimationUpdate(ValueAnimator animation) {
                 mPercent_one = (float) animation.getAnimatedValue();
                 invalidate();
+                if (mPercent_one == mPercent_one_goal) {
+                    animator.start();
+                }
             }
         });
-        anim.start();
+        animator_one.start();
 
-//        //第二部分的动画
-//        ValueAnimator animator = ValueAnimator.ofFloat(0, 1);
-//        animator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
-//            @Override
-//            public void onAnimationUpdate(ValueAnimator animation) {
-//
-//            }
-//        });
-//        animator.start();
+
     }
 }
