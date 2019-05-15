@@ -3,6 +3,7 @@ package com.demo.customviewdemo.gram;
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.DashPathEffect;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.util.AttributeSet;
@@ -72,6 +73,8 @@ public class SleepLineView extends View {
         paint_dash.setColor(color_xy);
         paint_dash.setStyle(Paint.Style.FILL);
         paint_dash.setStrokeWidth(1);
+        //画虚线的方式,表示画20像素的实线,留10像素的空白,以此往复
+        paint_dash.setPathEffect(new DashPathEffect(new float[]{20, 10}, 0));
 
         mTextBounds = new Rect();
     }
@@ -95,6 +98,7 @@ public class SleepLineView extends View {
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
+        setLayerType(LAYER_TYPE_SOFTWARE, null);
         drawXY(canvas);
     }
 
@@ -104,6 +108,13 @@ public class SleepLineView extends View {
         canvas.drawLine(xOri,yOri,width - DensityUtils.dp2px(mContext,10),yOri,paint_xy);
 
         //绘制Y轴
-        canvas.drawLine(xOri,DensityUtils.dp2px(mContext,30),xOri,yOri,paint_xy);
+        canvas.drawLine(xOri,DensityUtils.dp2px(mContext,10),xOri,yOri,paint_xy);
+
+        //绘制虚线,有三段虚线,每一段虚线的高度
+        float itemHeight = (yOri - DensityUtils.dp2px(mContext,10)) * 0.9f / 3;
+        for (int i = 1; i <= 3; i++) {
+            canvas.drawLine(xOri, yOri - i * itemHeight,
+                    width - DensityUtils.dp2px(mContext,10), yOri - i * itemHeight, paint_dash);
+        }
     }
 }

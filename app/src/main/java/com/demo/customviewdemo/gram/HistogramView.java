@@ -162,7 +162,6 @@ public class HistogramView extends View {
     protected void onDraw(Canvas canvas) {
 //        super.onDraw(canvas);
         setLayerType(LAYER_TYPE_SOFTWARE, null);
-        Log.i("histogram", "ondraw");
         drawXy(canvas);
         drawHistogram(canvas);
     }
