@@ -16,8 +16,14 @@
         />
 
     <com.demo.customviewdemo.gram.PointView
+        android:visibility="gone"
         android:id="@+id/pointview"
         android:layout_marginTop="10dp"
+        android:layout_width="300dp"
+        android:layout_height="400dp" />
+
+    <com.demo.customviewdemo.gram.SleepLineView
+        android:layout_marginTop="20dp"
         android:layout_width="300dp"
         android:layout_height="200dp" />
 

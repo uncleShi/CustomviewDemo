@@ -5,15 +5,11 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.DashPathEffect;
 import android.graphics.Paint;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
-import android.graphics.RectF;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.TextView;
 
 import com.demo.customviewdemo.DensityUtils;
 import com.demo.customviewdemo.R;
@@ -169,20 +165,6 @@ public class HistogramView extends View {
         Log.i("histogram", "ondraw");
         drawXy(canvas);
         drawHistogram(canvas);
-
-//        //重新开一个图层
-//        int layerId = canvas.saveLayer(0, 0, width, height, null, Canvas.ALL_SAVE_FLAG);
-//        drawXy(canvas);
-//        drawHistogram(canvas);
-//
-//        // 将折线超出x轴坐标的部分截取掉
-//        paint_line.setStyle(Paint.Style.FILL);
-//        paint_line.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.CLEAR));
-//        RectF rectF = new RectF(0, 0, xOri, height);
-//        canvas.drawRect(rectF, paint_line);
-//        paint_line.setXfermode(null);
-//        //保存图层
-//        canvas.restoreToCount(layerId);
     }
 
     /**
